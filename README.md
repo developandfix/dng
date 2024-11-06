@@ -9,8 +9,6 @@ Currently synced to DNG SDK version 1.7.1
 
 Requires the following libraries:
 - Adobe XMP ([modern CMake fork here](https://github.com/developandfix/xmp))
-
-For JPEG-XL support (WITH_JPEGXL=ON):
 - JXL
 - Brotli
 - HWY
