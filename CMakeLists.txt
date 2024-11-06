@@ -46,7 +46,7 @@ endif()
 file(GLOB DNG_SOURCES src/*.cpp)
 
 add_library(dng ${DNG_SOURCES})
-target_include_directories(dng PRIVATE ${JXL_INCLUDE_DIRS})
+target_include_directories(dng PRIVATE ${JXL_INCLUDE_DIRS} ${XMP_INCLUDE_DIR})
 target_link_libraries(dng PUBLIC
     ZLIB::ZLIB XMPCore XMPFiles ${JXL} ${JXLThreads} ${JXLCms}
     ${JPEGXL_DEPENDENCIES})
@@ -102,3 +102,30 @@ file(GLOB DNG_HEADERS src/*.h)
 install(TARGETS dng EXPORT DngTargets)
 install(FILES ${DNG_HEADERS} DESTINATION include/dng)
 install(EXPORT DngTargets FILE DngTargets.cmake DESTINATION lib/cmake/dng)
+
+set(DNG_INSTALL_INCLUDE_DIR include/dng)
+
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+# Configure the package
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/DNGConfig.cmake
+    PATH_VARS DNG_INSTALL_INCLUDE_DIR
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/DNG
+)
+
+# Generate version file
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/DNGConfigVersion.cmake
+    VERSION 1.0.0  # Replace with your actual version
+    COMPATIBILITY SameMajorVersion
+)
+
+# Install the config files
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/DNGConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/DNGConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/DNG
+)
+

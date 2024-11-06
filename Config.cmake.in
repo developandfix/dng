@@ -1,0 +1,9 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(XMP REQUIRED CONFIG)
+
+set_and_check(DNG_INCLUDE_DIR "@PACKAGE_DNG_INSTALL_INCLUDE_DIR@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/DNGTargets.cmake")

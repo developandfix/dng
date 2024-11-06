@@ -8,8 +8,5 @@ Designed primarily for use with [vcpkg](https://github.com/microsoft/vcpkg). Sho
 Currently synced to DNG SDK version 1.7.1
 
 Requires the following libraries:
-- Adobe XMP ([modern CMake fork here](https://github.com/developandfix/xmp))
-- JXL
-- Brotli
-- HWY
-- LCMS2
+- Adobe XMP ([modern CMake fork here](https://github.com/developandfix/xmp)) and its dependencies Expat and Zlib
+- JpegXL and its dependencies Brotli, Hwy, and Lcms2
