@@ -1,0 +1,104 @@
+cmake_minimum_required(VERSION 3.20)
+
+project(dng
+    VERSION 1.7.1
+    DESCRIPTION "Adobe DNG SDK"
+    LANGUAGES CXX C
+)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+
+find_library(JXL NAMES jxl REQUIRED)
+find_library(JXLThreads NAMES jxl_threads REQUIRED)
+find_library(JXLCms NAMES jxl_cms REQUIRED)
+find_path(JXL_INCLUDE_DIRS jxl/decode.h)
+
+# Find dependencies for static builds as libjxl doesn't provide CMake configs
+# to find them automatically.
+#
+find_library(HWY_LIBRARY           NAMES hwy REQUIRED)
+find_library(BROTLI_COMMON_LIBRARY NAMES brotlicommon brotlicommon-static REQUIRED)
+find_library(BROTLI_DEC_LIBRARY    NAMES brotlidec brotlidec-static REQUIRED)
+find_library(BROTLI_ENC_LIBRARY    NAMES brotlienc brotlienc-static REQUIRED)
+find_library(LCMS2_LIBRARY         NAMES lcms2 REQUIRED)
+
+set(JPEGXL_DEPENDENCIES
+    ${HWY_LIBRARY}
+    ${BROTLI_COMMON_LIBRARY}
+    ${BROTLI_DEC_LIBRARY}
+    ${BROTLI_ENC_LIBRARY}
+    ${LCMS2_LIBRARY})
+# For static builds libjxl requires -DJXL_STATIC_DEFINE
+#
+if (JPEGXL_LIBRARY MATCHES "jxl-static")
+    add_definitions(-DJXL_STATIC_DEFINE)
+endif()
+
+
+find_package(ZLIB REQUIRED)
+
+if (NOT TARGET XMPCore)
+    find_package(XMP CONFIG REQUIRED)
+endif()
+
+file(GLOB DNG_SOURCES src/*.cpp)
+
+add_library(dng ${DNG_SOURCES})
+target_include_directories(dng PRIVATE ${JXL_INCLUDE_DIRS})
+target_link_libraries(dng PUBLIC
+    ZLIB::ZLIB XMPCore XMPFiles ${JXL} ${JXLThreads} ${JXLCms}
+    ${JPEGXL_DEPENDENCIES})
+
+set(DNG_DEFINITIONS
+    -DqDNGUseXMP=1
+    -DqDNGXMPFiles=1
+    -DqDNGXMPDocOps=0
+)
+
+if (APPLE)
+    if (CMAKE_SYSTEM_NAME MATCHES "iOS")
+        list(APPEND DNG_DEFINITIONS
+            -DIOS_ENV=1
+            -DqiPhone=1
+        )
+    else()
+        list(APPEND DNG_DEFINITIONS
+            -DMAC_ENV=1
+            -DqMacOS=1
+        )
+    endif()
+elseif (ANDROID)
+    list(APPEND DNG_DEFINITIONS
+        -DANDROID_ENV=1
+        -DqAndroid=1
+    )
+elseif (WIN32)
+    list(APPEND DNG_DEFINITIONS
+        -DWIN_ENV=1
+        -DqWinOS=1
+    )
+else()
+    list(APPEND DNG_DEFINITIONS
+        -DUNIX_ENV=1
+        -DqLinux=1
+    )
+endif()
+
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+    list(APPEND DNG_DEFINITIONS -DqDNGBigEndian=0)
+endif()
+
+target_compile_definitions(dng PUBLIC ${DNG_DEFINITIONS})
+
+set(DNG_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(dng PUBLIC
+    $<BUILD_INTERFACE:${DNG_INCLUDE_DIRS}>
+    $<INSTALL_INTERFACE:include/dng>)
+
+# Install targets
+file(GLOB DNG_HEADERS src/*.h)
+install(TARGETS dng EXPORT DngTargets)
+install(FILES ${DNG_HEADERS} DESTINATION include/dng)
+install(EXPORT DngTargets FILE DngTargets.cmake DESTINATION lib/cmake/dng)
