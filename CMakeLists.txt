@@ -39,16 +39,23 @@ endif()
 
 find_package(ZLIB REQUIRED)
 
-if (NOT TARGET XMPCore)
+if (NOT TARGET XMP::XMPCore)
     find_package(XMP CONFIG REQUIRED)
 endif()
+
+message("XMP INCLUDE DIR: ${XMP_INCLUDE_DIR}")
+get_property(XMP_LIB TARGET XMP::XMPCore PROPERTY LOCATION)
+get_property(XMP_FILES_LIB TARGET XMP::XMPFiles PROPERTY LOCATION)
+
+message("XMP CORE Library: ${XMP_LIB}")
+message("XMP Files Library: ${XMP_FILES_LIB}")
 
 file(GLOB DNG_SOURCES src/*.cpp)
 
 add_library(dng ${DNG_SOURCES})
 target_include_directories(dng PRIVATE ${JXL_INCLUDE_DIRS} ${XMP_INCLUDE_DIR})
 target_link_libraries(dng PUBLIC
-    ZLIB::ZLIB XMPCore XMPFiles ${JXL} ${JXLThreads} ${JXLCms}
+    ZLIB::ZLIB XMP::XMPCore XMP::XMPFiles ${JXL} ${JXLThreads} ${JXLCms}
     ${JPEGXL_DEPENDENCIES})
 
 set(DNG_DEFINITIONS
