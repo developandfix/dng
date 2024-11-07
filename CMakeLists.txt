@@ -6,10 +6,6 @@ project(dng
     LANGUAGES CXX C
 )
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-
 find_library(JXL NAMES jxl REQUIRED)
 find_library(JXLThreads NAMES jxl_threads REQUIRED)
 find_library(JXLCms NAMES jxl_cms REQUIRED)
@@ -53,6 +49,8 @@ message("XMP Files Library: ${XMP_FILES_LIB}")
 file(GLOB DNG_SOURCES src/*.cpp)
 
 add_library(dng ${DNG_SOURCES})
+# DNG and headers require C++ 11
+target_compile_features(dng PUBLIC cxx_std_11)
 target_include_directories(dng PRIVATE ${JXL_INCLUDE_DIRS} ${XMP_INCLUDE_DIR})
 target_link_libraries(dng PUBLIC
     ZLIB::ZLIB XMP::XMPCore XMP::XMPFiles ${JXL} ${JXLThreads} ${JXLCms}
