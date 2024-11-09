@@ -106,7 +106,7 @@ target_include_directories(dng PUBLIC
 file(GLOB DNG_HEADERS src/*.h)
 install(TARGETS dng EXPORT DngTargets)
 install(FILES ${DNG_HEADERS} DESTINATION include/dng)
-install(EXPORT DngTargets FILE DngTargets.cmake DESTINATION lib/cmake/dng)
+install(EXPORT DngTargets FILE DngTargets.cmake DESTINATION lib/cmake/DNG)
 
 set(DNG_INSTALL_INCLUDE_DIR include/dng)
 
