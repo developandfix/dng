@@ -14,7 +14,8 @@ find_library(JXLCms NAMES jxl_cms REQUIRED)
 find_path(JXL_INCLUDE_DIRS jxl/decode.h)
 
 # For static builds libjxl requires -DJXL_STATIC_DEFINE
-
+# This assumes that if BUILD_SHARED_LIBS is not set (making this library static)
+# then JXL was also built as a static library.
 if (NOT BUILD_SHARED_LIBS)
     message("Using static libjxl")
     add_definitions(-DJXL_STATIC_DEFINE=1)
