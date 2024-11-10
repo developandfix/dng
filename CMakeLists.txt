@@ -53,8 +53,9 @@ add_library(dng ${DNG_SOURCES})
 target_compile_features(dng PUBLIC cxx_std_11)
 target_include_directories(dng PRIVATE ${JXL_INCLUDE_DIRS} ${XMP_INCLUDE_DIR})
 target_link_libraries(dng PUBLIC
-    ZLIB::ZLIB XMP::XMPCore XMP::XMPFiles ${JXL} ${JXLThreads} ${JXLCms}
-    ${JPEGXL_DEPENDENCIES})
+    ZLIB::ZLIB XMP::XMPCore XMP::XMPFiles 
+    ${JPEGXL_DEPENDENCIES}
+    ${JXL} ${JXLThreads} ${JXLCms})
 
 set(DNG_DEFINITIONS
     -DqDNGUseXMP=1
