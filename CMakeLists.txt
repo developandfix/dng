@@ -24,9 +24,9 @@ find_library(LCMS2_LIBRARY         NAMES lcms2 REQUIRED)
 
 set(JPEGXL_DEPENDENCIES
     ${HWY_LIBRARY}
-    ${BROTLI_COMMON_LIBRARY}
     ${BROTLI_DEC_LIBRARY}
     ${BROTLI_ENC_LIBRARY}
+    ${BROTLI_COMMON_LIBRARY}
     ${LCMS2_LIBRARY})
 # For static builds libjxl requires -DJXL_STATIC_DEFINE
 #
@@ -53,9 +53,9 @@ file(GLOB DNG_SOURCES src/*.cpp)
 add_library(dng ${DNG_SOURCES})
 target_include_directories(dng PRIVATE ${JXL_INCLUDE_DIRS} ${XMP_INCLUDE_DIR})
 target_link_libraries(dng PUBLIC
-    ZLIB::ZLIB XMP::XMPCore XMP::XMPFiles 
+    ZLIB::ZLIB XMP::XMPFiles XMP::XMPCore
     ${JPEGXL_DEPENDENCIES}
-    ${JXL} ${JXLThreads} ${JXLCms})
+    ${JXLThreads} ${JXLCms} ${JXL})
 
 set(DNG_DEFINITIONS
     -DqDNGUseXMP=1
