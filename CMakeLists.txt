@@ -13,27 +13,28 @@ find_library(JXLThreads NAMES jxl_threads REQUIRED)
 find_library(JXLCms NAMES jxl_cms REQUIRED)
 find_path(JXL_INCLUDE_DIRS jxl/decode.h)
 
-# Find dependencies for static builds as libjxl doesn't provide CMake configs
-# to find them automatically.
-#
-find_library(HWY_LIBRARY           NAMES hwy REQUIRED)
-find_library(BROTLI_COMMON_LIBRARY NAMES brotlicommon brotlicommon-static REQUIRED)
-find_library(BROTLI_DEC_LIBRARY    NAMES brotlidec brotlidec-static REQUIRED)
-find_library(BROTLI_ENC_LIBRARY    NAMES brotlienc brotlienc-static REQUIRED)
-find_library(LCMS2_LIBRARY         NAMES lcms2 REQUIRED)
-
-set(JPEGXL_DEPENDENCIES
-    ${HWY_LIBRARY}
-    ${BROTLI_DEC_LIBRARY}
-    ${BROTLI_ENC_LIBRARY}
-    ${BROTLI_COMMON_LIBRARY}
-    ${LCMS2_LIBRARY})
 # For static builds libjxl requires -DJXL_STATIC_DEFINE
-#
-if (JPEGXL_LIBRARY MATCHES "jxl-static")
-    add_definitions(-DJXL_STATIC_DEFINE)
-endif()
 
+if (NOT BUILD_SHARED_LIBS)
+    message("Using static libjxl")
+    add_definitions(-DJXL_STATIC_DEFINE=1)
+
+    # Find dependencies for static builds as libjxl doesn't provide CMake configs
+    # to find them automatically.
+    #
+    find_library(HWY_LIBRARY           NAMES hwy REQUIRED)
+    find_library(BROTLI_COMMON_LIBRARY NAMES brotlicommon brotlicommon-static REQUIRED)
+    find_library(BROTLI_DEC_LIBRARY    NAMES brotlidec brotlidec-static REQUIRED)
+    find_library(BROTLI_ENC_LIBRARY    NAMES brotlienc brotlienc-static REQUIRED)
+    find_library(LCMS2_LIBRARY         NAMES lcms2 REQUIRED)
+
+    set(JPEGXL_DEPENDENCIES
+        ${HWY_LIBRARY}
+        ${BROTLI_DEC_LIBRARY}
+        ${BROTLI_ENC_LIBRARY}
+        ${BROTLI_COMMON_LIBRARY}
+        ${LCMS2_LIBRARY})
+endif()
 
 find_package(ZLIB REQUIRED)
 
