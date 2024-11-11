@@ -18,8 +18,6 @@ find_path(JXL_INCLUDE_DIRS jxl/decode.h)
 # then JXL was also built as a static library.
 if (NOT BUILD_SHARED_LIBS)
     message("Using static libjxl")
-    add_definitions(-DJXL_STATIC_DEFINE=1)
-
     # Find dependencies for static builds as libjxl doesn't provide CMake configs
     # to find them automatically.
     #
@@ -30,11 +28,11 @@ if (NOT BUILD_SHARED_LIBS)
     find_library(LCMS2_LIBRARY         NAMES lcms2 REQUIRED)
 
     set(JPEGXL_DEPENDENCIES
-        ${HWY_LIBRARY}
         ${BROTLI_DEC_LIBRARY}
         ${BROTLI_ENC_LIBRARY}
         ${BROTLI_COMMON_LIBRARY}
-        ${LCMS2_LIBRARY})
+        ${LCMS2_LIBRARY}
+        ${HWY_LIBRARY})
 endif()
 
 find_package(ZLIB REQUIRED)
@@ -56,8 +54,9 @@ add_library(dng ${DNG_SOURCES})
 target_include_directories(dng PRIVATE ${JXL_INCLUDE_DIRS} ${XMP_INCLUDE_DIR})
 target_link_libraries(dng PUBLIC
     ZLIB::ZLIB XMP::XMPFiles XMP::XMPCore
-    ${JPEGXL_DEPENDENCIES}
-    ${JXLThreads} ${JXLCms} ${JXL})
+    ${JXL} ${JXLThreads} ${JXLCms}
+    ${JPEGXL_DEPENDENCIES})
+target_compile_definitions(dng PUBLIC "-DJXL_STATIC_DEFINE=1")
 
 set(DNG_DEFINITIONS
     -DqDNGUseXMP=1
